@@ -164,38 +164,6 @@ class SECPE(object):
         return pub_embedding, priv_embedding, secret_matrix
 
 
-    # def _pii_detection(self, mix_data):
-    #     """Secret detection.
-
-    #     :param mix_data: The mixed data
-    #     :type mix_data: :py:class:`pe.data.Data`
-    #     :return: The public data, private data, and secret matrix
-    #     :rtype: tuple[:py:class:`pe.data.Data`, :py:class:`pe.data.Data`, np.ndarray]
-    #     """
-
-    #     patterns = [re.compile(t) for t in self._secrets]
-    #     texts = mix_data.data_frame["PE.TEXT"].fillna("").astype(str)
-
-    #     anonymizer = Anonymizer()
-
-    #     rows = []
-    #     for text in texts:
-    #         try:
-    #             pii_masked_sentence = anonymizer.pii_mask(text)
-    #             rows.append([1 if p.search(pii_masked_sentence) else 0 for p in patterns])
-    #         except IndexError:
-    #             rows.append([0] * len(patterns))
-    #         # rows.append([1 if p.search(text) else 0 for p in patterns])
-
-    #     secret_matrix = np.array(rows, dtype=np.int8)
-    #     pub_num = np.sum(np.all(secret_matrix == 0, axis=1))
-    #     sec_nem = secret_matrix.shape[0] - pub_num
-    #     execution_logger.info(f"Secret detection done. Public data: {pub_num}, Private data: {sec_nem}")
-        
-    #     return secret_matrix
-
-
-
     def run(
         self,
         num_samples_schedule,
@@ -239,36 +207,12 @@ class SECPE(object):
                 sub_mix_data = self._mix_data.filter_label_id(label_id=label_id)
                 secret_matrix = label_matrix[label_id] if label_matrix is not None else None
                 
-                if np.sum(r) == 0:
-                    sub_mix_data = self._embedding.compute_embedding(sub_mix_data)
-                    sub_mix_embedding = np.stack(sub_mix_data.data_frame[self._embedding.column_name].values, axis=0).astype(np.float32)
-                    clusters = self._histogram.clustering_before_computation(sub_mix_embedding)
-                    label_data[label_id] = {
-                        "clusters": [{"center": c["center"], "size": int(c["size"])} for c in clusters],
-                    }
-                else: 
-                    sub_pub_embedding, sub_priv_embedding, sub_secret_matrix = self._split_by_secret(sub_mix_data, secret_matrix)
-                    clusters = self._histogram.clustering_before_computation(sub_pub_embedding)
-                
-                
-                    sub_prob = sp.sampling_prob(sec_matrix=sub_secret_matrix, p=p, r=r, num_samples=self._batch_num)
-                    sub_sigma = sp.get_noise_multiplier(
-                        p=p, r=r, sec_matrix=sub_secret_matrix,
-                        w = sub_prob, num_steps=len(num_samples_schedule)-1, 
-                        min_noise_multiplier=1e-1, max_noise_multiplier=500)
-                
-                    priv_data = [
-                        {"embedding": e, "sample_prob": float(prob)}
-                        for e, prob in zip(sub_priv_embedding, sub_prob)
-                    ]
-
-                    label_data[label_id] = {
-                        "clusters": [{"center": c["center"], "size": int(c["size"])} for c in clusters],
-                        "noise": sub_sigma,
-                        "priv_data": priv_data,
-                    }
-                
-                    execution_logger.info(f"noise for secDP: {sub_sigma}")
+                sub_mix_data = self._embedding.compute_embedding(sub_mix_data)
+                sub_mix_embedding = np.stack(sub_mix_data.data_frame[self._embedding.column_name].values, axis=0).astype(np.float32)
+                clusters = self._histogram.clustering_before_computation(sub_mix_embedding)
+                label_data[label_id] = {
+                    "clusters": [{"center": c["center"], "size": int(c["size"])} for c in clusters],
+                }
 
                 
             if checkpoint_path is not None and (syn_data := self.load_checkpoint(checkpoint_path)):
@@ -312,19 +256,7 @@ class SECPE(object):
                     sub_syn_data = syn_data.filter_label_id(label_id=label_id)
                     pack = label_data[label_id]
                     
-                    if np.sum(r) == 0:
-                        clusters = pack["clusters"]
-                    else:
-                        clusters = pack["clusters"]
-                        noise = pack["noise"]
-                        priv_data = pack["priv_data"]
-
-                        execution_logger.info(f"noise for secret protection: {noise}")
-
-                        clusterer = FastClusterSearch(mode="cos_sim")
-                        clusters = clusterer.private_cluster(public_clusters = clusters, 
-                                                             priv_embedding = priv_data, 
-                                                             sigma = noise, R = 1)
+                    clusters = pack["clusters"]
 
                     start_time = time.time()
                     sub_syn_data = self._histogram.compute_histogram_cluster(
