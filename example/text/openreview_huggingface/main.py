@@ -48,6 +48,9 @@ if __name__ == "__main__":
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
 
     data = OpenReview(root_dir="/tmp/data/openreview")
+    secrets = ['arouse', 'peters', 'garcia', 'h2', '4dvar', 'kth', 'broyden', 'hypergradients', 
+               'scalers', 'tianyu', 'disciplinary', 'sharpen', 'organizational', 'wild6d', 
+               'intrinsics', 'minh', 'eric', 'underlined', 'typeset', '3c', 'eating']
     llm = HuggingfaceLLM(max_completion_tokens=448, model_name_or_path="gpt2", temperature=1.2)
     api = LLMAugPE(
         llm=llm,
@@ -78,18 +81,18 @@ if __name__ == "__main__":
     num_private_samples = len(data.data_frame)
     delta = 1.0 / num_private_samples / np.log(num_private_samples)
 
-    pe_runner = SECPE(
+    pe_runner = PE(
         mix_data=data,
         embedding=embedding,
-        secrets=None,
+        secrets=secrets,
         population=population,
         histogram=histogram,
         callbacks=[save_checkpoints, save_text_to_csv, compute_fid],
         loggers=[csv_print, log_print],
     )
-    J = 10
+    J = len(secrets)
     p = np.full(J, 1e-4, dtype=np.float64)
-    r = 0 * p
+    r = 2 * p
     pe_runner.run(
         num_samples_schedule=[2000] * 2,
         p=p, r=r,
