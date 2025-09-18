@@ -7,7 +7,6 @@ from pe.logging import execution_logger
 from pe.embedding import Embedding
 from tqdm import tqdm, trange
 from pe.histogram.nearest_neighbor_backend.private_cluster import FastClusterSearch
-from pe.dp.secretdp import Gaussian
 import re
 import time
 import pickle
@@ -199,8 +198,6 @@ class SECPE(object):
         try:
 
             label_data = {}
-            sp = Gaussian(mode = self._dp_mode)
-
             execution_logger.info(f"clustering before iteration")
             for label_id in range(len(self._mix_data.metadata.label_info)):
                 execution_logger.info(f"Label {label_id}")
