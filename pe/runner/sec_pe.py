@@ -199,7 +199,7 @@ class SECPE(object):
         try:
 
             # syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/cluster25_2p")
-            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/yelp/yelp_400k_2p")
+            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/yelp/yelp_600k_2p")
             syn_data.data_frame.reset_index(drop=True, inplace=True)
             syn_data.metadata.iteration = 0
             syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
@@ -219,7 +219,7 @@ class SECPE(object):
                     "clusters": [{"center": c["center"], "size": int(c["size"])} for c in clusters],
                 }
 
-            with open("/content/drive/MyDrive/SecPE/label_data_400k.pkl", "wb") as f:
+            with open("/content/drive/MyDrive/SecPE/label_data_600k.pkl", "wb") as f:
                 pickle.dump(label_data, f)
                 
         
