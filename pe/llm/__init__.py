@@ -4,4 +4,4 @@ from .openai import OpenAILLM
 from .azure_openai import AzureOpenAILLM
 from .huggingface.huggingface import HuggingfaceLLM
 
-__all__ = ["LLM", "Request", "OpenAILLM", "AzureOpenAILLM", "HuggingfaceLLM"]
+__all__ = ["LLM", "Request", "OpenAILLM", "HuggingfaceLLM"]
