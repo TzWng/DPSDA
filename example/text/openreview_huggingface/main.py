@@ -92,7 +92,7 @@ if __name__ == "__main__":
     )
     J = len(secrets)
     p = np.full(J, 1e-4, dtype=np.float64)
-    r = 2 * p
+    r = 10 * p
     pe_runner.run(
         num_samples_schedule=[2000] * 2,
         p=p, r=r,
