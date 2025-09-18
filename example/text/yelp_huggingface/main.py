@@ -36,6 +36,7 @@ from pe.constant.data import VARIATION_API_FOLD_ID_COLUMN_NAME
 import pandas as pd
 import os
 import numpy as np
+import pickle
 
 pd.options.mode.copy_on_write = True
 
@@ -46,7 +47,7 @@ if __name__ == "__main__":
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
 
-    data = Yelp(root_dir="/tmp/data/yelp")
+    data = Yelp(root_dir="/content/drive/MyDrive/SecPE/Yelp_train.csv")
     llm = HuggingfaceLLM(max_completion_tokens=64, model_name_or_path="gpt2", temperature=1.4)
     api = LLMAugPE(
         llm=llm,
@@ -68,6 +69,9 @@ if __name__ == "__main__":
     compute_fid = ComputeFID(
         priv_data=data, embedding=embedding, filter_criterion={VARIATION_API_FOLD_ID_COLUMN_NAME: -1}
     )
+    with open("/content/drive/MyDrive/SecPE/compute_fid.pkl", "wb") as f:
+        pickle.dump(compute_fid, f)
+        
     save_text_to_csv = SaveTextToCSV(output_folder=os.path.join(exp_folder, "synthetic_text"))
 
     csv_print = CSVPrint(output_folder=exp_folder)
@@ -76,16 +80,20 @@ if __name__ == "__main__":
     num_private_samples = len(data.data_frame)
     delta = 1.0 / num_private_samples / np.log(num_private_samples)
 
-    pe_runner = PE(
-        priv_data=data,
+    pe_runner = SECPE(
+        mix_data=data,
+        embedding=embedding,
+        secrets=secrets,
         population=population,
         histogram=histogram,
         callbacks=[save_checkpoints, save_text_to_csv, compute_fid],
         loggers=[csv_print, log_print],
     )
+    J = 10
+    p = np.full(J, 1e-4, dtype=np.float64)
+    r = 0 * p
     pe_runner.run(
         num_samples_schedule=[5000] * 1,
-        delta=delta,
-        epsilon=1.0,
+        p=p, r=r,
         checkpoint_path=os.path.join(exp_folder, "checkpoint"),
     )
