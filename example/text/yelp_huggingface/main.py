@@ -70,7 +70,7 @@ if __name__ == "__main__":
         priv_data=data, embedding=embedding, filter_criterion={VARIATION_API_FOLD_ID_COLUMN_NAME: -1}
     )
     with open("/content/drive/MyDrive/SecPE/compute_fid.pkl", "wb") as f:
-        pickle.dump(compute_fid, f)
+        pickle.dump(compute_fid_yelp, f)
         
     save_text_to_csv = SaveTextToCSV(output_folder=os.path.join(exp_folder, "synthetic_text"))
 
