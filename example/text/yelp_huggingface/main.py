@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
 
-    data = Yelp(root_dir="/content/drive/MyDrive/SecPE/Yelp/")
+    data = Yelp(root_dir="/content/drive/MyDrive/SecPE/Yelp")
     llm = HuggingfaceLLM(max_completion_tokens=64, model_name_or_path="gpt2", temperature=1.4)
     api = LLMAugPE(
         llm=llm,
