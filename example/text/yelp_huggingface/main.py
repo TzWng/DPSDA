@@ -42,7 +42,7 @@ pd.options.mode.copy_on_write = True
 
 
 if __name__ == "__main__":
-    exp_folder = "results/text/yelp_huggingface"
+    exp_folder = "/content/drive/MyDrive/SecPE"
     current_folder = os.path.dirname(os.path.abspath(__file__))
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
@@ -60,7 +60,7 @@ if __name__ == "__main__":
         embedding=embedding,
         mode="cos_sim",
         lookahead_degree=0,
-        num_clusters=600,
+        num_clusters=400,
     )
     population = PEPopulation(
         api=api, initial_variation_api_fold=6, next_variation_api_fold=6, keep_selected=True, selection_mode="rank"
