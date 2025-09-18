@@ -81,7 +81,7 @@ if __name__ == "__main__":
     pe_runner = SECPE(
         mix_data=data,
         embedding=embedding,
-        secrets=secrets,
+        secrets=None,
         population=population,
         histogram=histogram,
         callbacks=[save_checkpoints, save_text_to_csv, compute_fid],
