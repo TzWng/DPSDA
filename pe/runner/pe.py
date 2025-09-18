@@ -1,6 +1,7 @@
 import numpy as np
 
 # from pe.dp import Gaussian
+from pe.data.text import Yelp, OpenReview
 from pe.data import Data
 from pe.constant.data import LABEL_ID_COLUMN_NAME
 from pe.logging import execution_logger
