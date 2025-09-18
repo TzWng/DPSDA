@@ -9,7 +9,7 @@ from pe.constant.data import LOOKAHEAD_EMBEDDING_COLUMN_NAME
 from pe.constant.data import LABEL_ID_COLUMN_NAME
 from pe.constant.data import HISTOGRAM_NEAREST_NEIGHBORS_VOTING_IDS_COLUMN_NAME
 from pe.logging import execution_logger
-
+from pe.histogram.nearest_neighbor_backend.private_cluster import FastClusterSearch
 
 class NearestNeighbors(Histogram):
     """Compute the nearest neighbors histogram. Each private sample will vote for their closest `num_nearest_neighbors`
@@ -25,6 +25,7 @@ class NearestNeighbors(Histogram):
         voting_details_log_folder=None,
         api=None,
         num_nearest_neighbors=1,
+        num_clusters=20,
         backend="auto",
         vote_normalization_level="sample",
     ):
@@ -74,6 +75,7 @@ class NearestNeighbors(Histogram):
         self._voting_details_log_folder = voting_details_log_folder
         self._api = api
         self._num_nearest_neighbors = num_nearest_neighbors
+        self._num_clusters = num_clusters
         if self._lookahead_degree > 0 and self._api is None:
             raise ValueError("API should be provided when lookahead_degree is greater than 0")
         if backend.lower() == "faiss":
@@ -162,6 +164,13 @@ class NearestNeighbors(Histogram):
         self._log_lookahead(syn_data=syn_data, lookahead_id=-1)
 
         return syn_data
+    
+    def clustering_before_computation(self, priv_embedding):
+        # priv_data = self._embedding.compute_embedding(priv_data)
+        # priv_embedding = np.stack(priv_data.data_frame[self._embedding.column_name].values, axis=0).astype(np.float32)
+        clusterer = FastClusterSearch(mode=self._mode)
+        clusters = clusterer.K_cluster_new(priv_embedding, num_clusters=self._num_clusters)
+        return clusters
 
     def compute_histogram(self, priv_data, syn_data):
         """Compute the nearest neighbors histogram.
@@ -195,6 +204,12 @@ class NearestNeighbors(Histogram):
             num_nearest_neighbors=self._num_nearest_neighbors,
             mode=self._mode,
         )
+
+        values, counts = np.unique(ids, return_counts=True)
+        sorted_indices = np.argsort(-counts)
+        sorted_values_counts = list(zip(values[sorted_indices], counts[sorted_indices]))
+
+        execution_logger.info(f"voting_details: {sorted_values_counts}")
         self._log_voting_details(priv_data=priv_data, syn_data=syn_data, ids=ids)
 
         priv_data = priv_data.reset_index(drop=True)
@@ -222,3 +237,81 @@ class NearestNeighbors(Histogram):
         )
 
         return priv_data, syn_data
+    
+
+    def compute_histogram_cluster(self, syn_data, clusters):
+        """Compute the nearest neighbors histogram.
+
+        :param priv_data: The private data
+        :type priv_data: :py:class:`pe.data.Data`
+        :param syn_data: The synthetic data
+        :type syn_data: :py:class:`pe.data.Data`
+        :raises ValueError: If the `vote_normalization_level` is unknown
+        :return: The private data, possibly with the additional embedding column, and the synthetic data, with the
+            computed histogram in the column :py:const:`pe.constant.data.CLEAN_HISTOGRAM_COLUMN_NAME` and possibly with
+            the additional embedding column
+        :rtype: tuple[:py:class:`pe.data.Data`, :py:class:`pe.data.Data`]
+        """
+        execution_logger.info(
+            f"Histogram: computing nearest neighbors histogram for {len(clusters)} private "
+            f"samples and {len(syn_data.data_frame)} synthetic samples"
+        )
+
+        syn_data = self._compute_lookahead_embedding(syn_data)
+
+        syn_embedding = np.stack(syn_data.data_frame[LOOKAHEAD_EMBEDDING_COLUMN_NAME].values, axis=0).astype(
+            np.float32
+        )
+
+        clusterer = FastClusterSearch(mode=self._mode)
+ 
+        votes = clusterer.search(
+            syn_embedding=syn_embedding,
+            clusters = clusters
+            ).astype(np.float32)
+        
+        nz = np.flatnonzero(votes)
+        order = nz[np.argsort(votes[nz])[::-1]]
+        sorted_values_counts = [(int(j), int(votes[j])) for j in order]
+        execution_logger.info(f"voting_details: {sorted_values_counts}")
+
+        norm = np.linalg.norm(votes)
+        count = votes / norm if norm > 0 else votes
+
+        # values, counts = np.unique(ids, return_counts=True)
+        # sorted_indices = np.argsort(-counts)
+        # sorted_values_counts = list(zip(values[sorted_indices], counts[sorted_indices]))
+        # execution_logger.info(f"voting_details: {sorted_values_counts}")
+
+        # self._log_voting_details(priv_data=priv_data, syn_data=syn_data, ids=ids)
+
+        # priv_data = priv_data.reset_index(drop=True)
+        # if self._vote_normalization_level == "client":
+        #     priv_data_list = priv_data.split_by_client()
+        # elif self._vote_normalization_level == "sample":
+        #     priv_data_list = priv_data.split_by_index()
+        # else:
+        #     raise ValueError(f"Unknown vote normalization level: {self._vote_normalization_level}")
+
+        # count = np.zeros(shape=syn_embedding.shape[0], dtype=np.float32)
+        # for sub_priv_data in priv_data_list:
+        #     sub_count = np.zeros(shape=syn_embedding.shape[0], dtype=np.float32)
+        #     sub_ids = ids[sub_priv_data.data_frame.index]
+        #     counter = Counter(list(sub_ids.flatten()))
+        #     sub_count[list(counter.keys())] = list(counter.values())
+        #     sub_count /= np.linalg.norm(sub_count)
+        #     count += sub_count
+
+        syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME] = count
+
+        execution_logger.info(
+            f"Histogram: finished computing nearest neighbors histogram for {len(clusters)} private "
+            f"samples and {len(syn_data.data_frame)} synthetic samples"
+        )
+
+        return syn_data
+
+
+        
+
+
