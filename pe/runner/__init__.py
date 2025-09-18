@@ -1,3 +1,4 @@
 from .pe import PE
+from .sec_pe import SECPE
 
-__all__ = ["PE"]
+__all__ = ["PE", "SECPE"]
