@@ -20,7 +20,7 @@ https://microsoft.github.io/DPSDA/.
 
 from pe.data.text import Yelp
 from pe.logging import setup_logging
-from pe.runner import PE
+from pe.runner import PE, SECPE
 from pe.population import PEPopulation
 from pe.api.text import LLMAugPE
 from pe.llm import HuggingfaceLLM
@@ -56,8 +56,9 @@ if __name__ == "__main__":
     embedding = SentenceTransformer(model="stsb-roberta-base-v2")
     histogram = NearestNeighbors(
         embedding=embedding,
-        mode="L2",
+        mode="cos_sim",
         lookahead_degree=0,
+        num_clusters=400,
     )
     population = PEPopulation(
         api=api, initial_variation_api_fold=6, next_variation_api_fold=6, keep_selected=True, selection_mode="rank"
@@ -83,7 +84,7 @@ if __name__ == "__main__":
         loggers=[csv_print, log_print],
     )
     pe_runner.run(
-        num_samples_schedule=[5000] * 21,
+        num_samples_schedule=[5000] * 1,
         delta=delta,
         epsilon=1.0,
         checkpoint_path=os.path.join(exp_folder, "checkpoint"),
