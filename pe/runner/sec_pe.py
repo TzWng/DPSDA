@@ -198,6 +198,13 @@ class SECPE(object):
         """
         try:
 
+            # syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/cluster25_2p")
+            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/yelp/yelp_400k_2p")
+            syn_data.data_frame.reset_index(drop=True, inplace=True)
+            syn_data.metadata.iteration = 0
+            syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
+            # self._log_metrics(syn_data)
+            
             label_data = {}
             execution_logger.info(f"clustering before iteration")
             for label_id in range(len(self._mix_data.metadata.label_info)):
@@ -212,16 +219,9 @@ class SECPE(object):
                     "clusters": [{"center": c["center"], "size": int(c["size"])} for c in clusters],
                 }
 
-            with open("/content/drive/MyDrive/SecPE/label_data.pkl", "wb") as f:
+            with open("/content/drive/MyDrive/SecPE/label_data_400k.pkl", "wb") as f:
                 pickle.dump(label_data, f)
                 
-            
-            syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/cluster25_2p")
-            syn_data.data_frame.reset_index(drop=True, inplace=True)
-            syn_data.metadata.iteration = 0
-            syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
-            # self._log_metrics(syn_data)
-
         
             total_duration = 0.0 
 
