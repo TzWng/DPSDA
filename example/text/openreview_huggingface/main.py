@@ -20,7 +20,7 @@ https://microsoft.github.io/DPSDA/.
 
 from pe.data.text import OpenReview
 from pe.logging import setup_logging
-from pe.runner import PE
+from pe.runner import PE, SECPE
 from pe.population import PEPopulation
 from pe.api.text import LLMAugPE
 from pe.llm import HuggingfaceLLM
@@ -36,12 +36,13 @@ from pe.constant.data import VARIATION_API_FOLD_ID_COLUMN_NAME
 import pandas as pd
 import os
 import numpy as np
+import pickle
 
 pd.options.mode.copy_on_write = True
 
 
 if __name__ == "__main__":
-    exp_folder = "results/text/openreview_huggingface"
+    exp_folder = "/content/drive/MyDrive/SecPE"
     current_folder = os.path.dirname(os.path.abspath(__file__))
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
@@ -56,8 +57,9 @@ if __name__ == "__main__":
     embedding = SentenceTransformer(model="stsb-roberta-base-v2")
     histogram = NearestNeighbors(
         embedding=embedding,
-        mode="L2",
+        mode="cos_sim",
         lookahead_degree=0,
+        num_clusters=15,
     )
     population = PEPopulation(
         api=api, initial_variation_api_fold=6, next_variation_api_fold=6, keep_selected=True, selection_mode="rank"
@@ -67,6 +69,9 @@ if __name__ == "__main__":
     compute_fid = ComputeFID(
         priv_data=data, embedding=embedding, filter_criterion={VARIATION_API_FOLD_ID_COLUMN_NAME: -1}
     )
+    with open("/content/drive/MyDrive/SecPE/compute_fid.pkl", "wb") as f:
+        pickle.dump(compute_fid, f)
+        
     save_text_to_csv = SaveTextToCSV(output_folder=os.path.join(exp_folder, "synthetic_text"))
 
     csv_print = CSVPrint(output_folder=exp_folder)
@@ -75,16 +80,20 @@ if __name__ == "__main__":
     num_private_samples = len(data.data_frame)
     delta = 1.0 / num_private_samples / np.log(num_private_samples)
 
-    pe_runner = PE(
-        priv_data=data,
+    pe_runner = SECPE(
+        mix_data=data,
+        embedding=embedding,
+        secrets=secrets,
         population=population,
         histogram=histogram,
         callbacks=[save_checkpoints, save_text_to_csv, compute_fid],
         loggers=[csv_print, log_print],
     )
+    J = 10
+    p = np.full(J, 1e-4, dtype=np.float64)
+    r = 0 * p
     pe_runner.run(
-        num_samples_schedule=[2000] * 11,
-        delta=delta,
-        epsilon=1.0,
+        num_samples_schedule=[2000] * 1,
+        p=p, r=r,
         checkpoint_path=os.path.join(exp_folder, "checkpoint"),
     )
