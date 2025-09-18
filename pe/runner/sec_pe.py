@@ -222,7 +222,7 @@ class SECPE(object):
             # with open("/content/drive/MyDrive/SecPE/label_data_800k.pkl", "wb") as f:
             #     pickle.dump(label_data, f)
 
-            with open("/content/drive/MyDrive/SecPE/label_data_400k.pkl", "rb") as f:
+            with open("/content/drive/MyDrive/SecPE/label_data_600k.pkl", "rb") as f:
                 label_data = pickle.load(f)
                 
         
