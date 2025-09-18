@@ -240,6 +240,7 @@ class SECPE(object):
             syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train")
             syn_data.data_frame.reset_index(drop=True, inplace=True)
             syn_data.metadata.iteration = 0
+            syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
             self._log_metrics(syn_data)
 
         
