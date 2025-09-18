@@ -1,6 +1,7 @@
 import numpy as np
 
 # from pe.dp import Gaussian
+from pe.data.text import Yelp, Openreview
 from pe.data import Data
 from pe.constant.data import LABEL_ID_COLUMN_NAME
 from pe.logging import execution_logger
@@ -236,7 +237,7 @@ class SECPE(object):
             #     syn_data.metadata.iteration = 0
             #     self._log_metrics(syn_data)
 
-            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/train")
+            syn_data = Openreview(root_dir="/content/drive/MyDrive/SecPE/train")
             syn_data = Data.concat(syn_data_list, metadata=self._mix_data.metadata)
             syn_data.data_frame.reset_index(drop=True, inplace=True)
             syn_data.metadata.iteration = 0
