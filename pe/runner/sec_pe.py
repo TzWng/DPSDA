@@ -219,7 +219,7 @@ class SECPE(object):
                     "clusters": [{"center": c["center"], "size": int(c["size"])} for c in clusters],
                 }
 
-            with open("/content/drive/MyDrive/SecPE/label_data_600k.pkl", "wb") as f:
+            with open("/content/drive/MyDrive/SecPE/label_data_800k.pkl", "wb") as f:
                 pickle.dump(label_data, f)
                 
         
