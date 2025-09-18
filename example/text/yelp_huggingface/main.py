@@ -48,6 +48,7 @@ if __name__ == "__main__":
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
 
     data = Yelp(root_dir="/content/drive/MyDrive/SecPE/upload")
+    secrets = ['phillie', 'btwn', 'shh', 'bespoke', 'clot', 'allegria', 'rava', 'repost', 'gracing', 'gaminess', 'sri', 'plateau', 'perms', 'bobas', 'wince', 'virago', 'pana', '15k', 'sunglass', 'translating', 'banal', 'lupe', 'borgata', 'irreplaceable', 'conceptually', 'raided', 'purge', 'toki', 'wollensky', 'encyclopedic', 'surpassing', 'sharpen', 'bayalage', 'sneakily', '204', 'crunchwrap', 'sprinted', 'mythos', 'compromises', 'backdrops', 'dalton', 'umpteenth', 'bei', 'unknowing', 'eves', '2hours', 'gigante', 'marino', 'paccheri', 'micha', 'filomena', 'uploading', 'raffles', 'vikings', 'lindenwood', 'temperamental', 'murphys', 'slainte', 'undeserving', 'olfactory', 'yona', 'orthotics', 'sprinklers', '168', 'untrustworthy', 'fudgy', 'reconfirm', 'verduras', 'depict', 'plesant', 'carmelitas', 'cortadito', 'erie', 'yeesh', 'dipa', 'grump', 'woodworking', '2sp', 'fritatta', 'modem', 'narnia', 'gameday', 'diablitos', 'citadel', 'fc', 'snickered', 'caf', 'tapestry', 'agnes', 'anomalies', 'tolerating', 'cobra', 'gulping', 'outages', 'nobles', 'presenter', 'flopping', 'cupid', 'tabbouli', 'gateau', 'cocoon', 'marries', 'commonwealth', 'gobbling', 'folsom', 'healthiness', 'liquored', 'sniffed', 'shoves', 'résistance', 'garret', 'greene', 'fasciitis', 'northerners', 'characterize', 'abysmally', 'probability', 'distressing', 'smarmy', 'whistling', 'jude', 'enterprises', 'coaxing', 'poser', 'brookie', 'evils', 'discusses', 'calabria', 'waaayyy', 'chasse', 'automobiles', 'instructs', 'bandaids', 'dabs', 'cystic', 'surcharges', 'guthrie', 'wring', 'tills', 'khing', 'ticketmaster', 'dorsett', 'anthonys', 'pyt', 'morally', 'ravaged', 'hte', 'dossant', 'radiohead', 'nuthin', 'crispies', 'tumbling', 'innings', 'intangibles', 'reinforces', 'runnier', 'amazinggggg', 'unconscionable', 'kohlrabi', 'playgrounds', 'fiddlehead', 'quetzally', 'etoile', 'vetted', 'schemes', 'roving', 'cheung', '133', 'hammonton', 'grasping', 'mailers', 'slumped', 'miserly', 'woodlands', 'cemetary', 'lardo', 'cite', 'pivotal', 'était', 'hiro', 'rockfish', 'wonderfull', 'hushpuppy', 'scalded', 'winspear', 'wearable', 'chihuly', 'coaxed', 'pouting', '4hrs', 'horde', 'niçoise', 'capitalist', 'buuuut', 'babylon', 'quotations', 'kickboxing', 'bullion', 'hott', 'dissect', 'bitchin', 'tequenos', 'marti', 'indulgences', 'emotionless', 'chelsey', 'camouflage', 'soggier', 'dodgers', 'teaming', 'coronary', 'fwot', 'admonished', 'crappier', 'isc', 'swimwear', 'singularly', 'totalled', 'marisco', 'inquisitive', 'carissa', 'lampshade', 'tallow', 'segunda', 'retaliation', 'updos', 'handprints', '445', 'johanna', 'pesticides', 'badgering', 'instinctively', 'dekes', 'reigning', 'jeyuk', 'throng', 'krēm', 'miner', 'interracial', 'qualifications', 'curators', 'reproduction', 'chemex', 'chex', 'foodservice', 'mazes', 'polaris', 'wrigley', 'asthmatic', 'downturn', 'brunchy', 'culinarily', 'membrane', 'hopsmith', 'bitched', 'awash', 'jennie', 'spawn', 'hammers', 'veterinarian', 'rotator', 'acceptably', '422', 'epi', 'boswell', 'unfocused', 'mouthy', 'quatro', 'psychologist', 'rani', 'burton', 'unbothered', 'kingfisher', 'eladio', 'expletive', 'bozo', 'laces', 'curacao', 'expereince', 'opp', 'omelete', 'malcolm', 'amour', 'volvo', 'freckles', 'crosswalk', 'uph', 'ofc', 'aunties', 'egress', 'upsale', '134', 'zodiac', 'mimics', '35min', 'preventive', 'bonita']
     llm = HuggingfaceLLM(max_completion_tokens=64, model_name_or_path="gpt2", temperature=1.4)
     api = LLMAugPE(
         llm=llm,
@@ -66,11 +67,13 @@ if __name__ == "__main__":
     )
 
     save_checkpoints = SaveCheckpoints(os.path.join(exp_folder, "checkpoint"))
-    compute_fid = ComputeFID(
-        priv_data=data, embedding=embedding, filter_criterion={VARIATION_API_FOLD_ID_COLUMN_NAME: -1}
-    )
-    with open("/content/drive/MyDrive/SecPE/compute_fid_yelp.pkl", "wb") as f:
-        pickle.dump(compute_fid, f)
+    # compute_fid = ComputeFID(
+    #     priv_data=data, embedding=embedding, filter_criterion={VARIATION_API_FOLD_ID_COLUMN_NAME: -1}
+    # )
+    # with open("/content/drive/MyDrive/SecPE/compute_fid_yelp.pkl", "wb") as f:
+    #     pickle.dump(compute_fid, f)
+    with open("/content/drive/MyDrive/SecPE/compute_fid_yelp.pkl", "rb") as f:
+        compute_fid = pickle.load(f)
         
     save_text_to_csv = SaveTextToCSV(output_folder=os.path.join(exp_folder, "synthetic_text"))
 
@@ -89,7 +92,7 @@ if __name__ == "__main__":
         callbacks=[save_checkpoints, save_text_to_csv, compute_fid],
         loggers=[csv_print, log_print],
     )
-    J = 10
+    J = len(secrets)
     p = np.full(J, 1e-4, dtype=np.float64)
     r = 0 * p
     pe_runner.run(
