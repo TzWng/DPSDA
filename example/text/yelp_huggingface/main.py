@@ -60,7 +60,7 @@ if __name__ == "__main__":
         embedding=embedding,
         mode="cos_sim",
         lookahead_degree=0,
-        num_clusters=400,
+        num_clusters=800,
     )
     population = PEPopulation(
         api=api, initial_variation_api_fold=6, next_variation_api_fold=6, keep_selected=True, selection_mode="rank"
