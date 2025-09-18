@@ -62,7 +62,7 @@ if __name__ == "__main__":
         embedding=embedding,
         mode="cos_sim",
         lookahead_degree=0,
-        num_clusters=25,
+        num_clusters=15,
     )
     population = PEPopulation(
         api=api, initial_variation_api_fold=6, next_variation_api_fold=6, keep_selected=True, selection_mode="rank"
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     num_private_samples = len(data.data_frame)
     delta = 1.0 / num_private_samples / np.log(num_private_samples)
 
-    pe_runner = PE(
+    pe_runner = SECPE(
         mix_data=data,
         embedding=embedding,
         secrets=secrets,
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     )
     J = len(secrets)
     p = np.full(J, 1e-4, dtype=np.float64)
-    r = 10 * p
+    r = 0 * p
     pe_runner.run(
         num_samples_schedule=[2000] * 2,
         p=p, r=r,
