@@ -1,14 +1,14 @@
 import numpy as np
-import os
+from scipy.special import softmax
 
 from .population import Population
 from pe.data import Data
 from pe.constant.data import DP_HISTOGRAM_COLUMN_NAME
+from pe.constant.data import CLEAN_HISTOGRAM_COLUMN_NAME
 from pe.constant.data import POST_PROCESSED_DP_HISTOGRAM_COLUMN_NAME
 from pe.constant.data import PARENT_SYN_DATA_INDEX_COLUMN_NAME
 from pe.constant.data import FROM_LAST_FLAG_COLUMN_NAME
 from pe.constant.data import VARIATION_API_FOLD_ID_COLUMN_NAME
-from pe.constant.data import LABEL_ID_COLUMN_NAME
 from pe.logging import execution_logger
 
 
@@ -23,7 +23,6 @@ class PEPopulation(Population):
         next_variation_api_fold=1,
         keep_selected=False,
         selection_mode="sample",
-        histogram_log_folder=None,
     ):
         """Constructor.
 
@@ -42,9 +41,6 @@ class PEPopulation(Population):
             random sampling proportional to the histogram), "rank" (select the top samples according to the histogram).
             Defaults to "sample"
         :type selection_mode: str, optional
-        :param histogram_log_folder: The folder to save the logs of the histogram. If it is None, the logs are not
-            saved. Defaults to None
-        :type histogram_log_folder: str, optional
         :raises ValueError: If next_variation_api_fold is 0 and keep_selected is False
         """
         super().__init__()
@@ -59,7 +55,6 @@ class PEPopulation(Population):
                 "next_variation_api_fold should be greater than 0 or keep_selected should be True. Otherwise, next "
                 "synthetic data will be empty."
             )
-        self._histogram_log_folder = histogram_log_folder
 
     def initial(self, label_info, num_samples):
         """Generate the initial synthetic data.
@@ -98,14 +93,18 @@ class PEPopulation(Population):
             :py:const:`pe.constant.data.POST_PROCESSED_DP_HISTOGRAM_COLUMN_NAME`
         :rtype: :py:class:`pe.data.Data`
         """
-        count = syn_data.data_frame[DP_HISTOGRAM_COLUMN_NAME].to_numpy()
+        if DP_HISTOGRAM_COLUMN_NAME in syn_data.data_frame.columns:
+            count = syn_data.data_frame[DP_HISTOGRAM_COLUMN_NAME].to_numpy()
+        else:
+            count = syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME].to_numpy()
+        # count = syn_data.data_frame[DP_HISTOGRAM_COLUMN_NAME].to_numpy()
+        # count = syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME].to_numpy()
         if self._histogram_threshold is not None:
             clipped_count = np.clip(count, a_min=self._histogram_threshold, a_max=None)
             clipped_count -= self._histogram_threshold
         else:
             clipped_count = count
         syn_data.data_frame[POST_PROCESSED_DP_HISTOGRAM_COLUMN_NAME] = clipped_count
-        self._log_histogram(syn_data)
         return syn_data
 
     def _select_data(self, syn_data, num_samples):
@@ -120,35 +119,35 @@ class PEPopulation(Population):
         :rtype: :py:class:`pe.data.Data`
         """
         if self._selection_mode == "sample":
-            count = syn_data.data_frame[POST_PROCESSED_DP_HISTOGRAM_COLUMN_NAME].to_numpy()
+            if DP_HISTOGRAM_COLUMN_NAME in syn_data.data_frame.columns:
+                syn_data.data_frame[POST_PROCESSED_DP_HISTOGRAM_COLUMN_NAME].to_numpy()
+            else:
+                count = syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME].to_numpy()
+            # count = syn_data.data_frame[POST_PROCESSED_DP_HISTOGRAM_COLUMN_NAME].to_numpy()
+            # count = syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME].to_numpy()
             prob = count / count.sum()
-            indices = np.random.choice(len(syn_data.data_frame), size=num_samples, p=prob)
+            nonzero_idx = np.flatnonzero(prob)
+            if len(nonzero_idx) >= num_samples:
+                indices = np.random.choice(len(syn_data.data_frame), size=num_samples, p=prob, replace=False)
+            else:
+                chosen_nonzero = np.random.choice(nonzero_idx, size=len(nonzero_idx),
+                                                  p=prob[nonzero_idx]/prob[nonzero_idx].sum(), replace=False) if len(nonzero_idx) > 0 else np.array([], dtype=int)
+                zero_idx = np.flatnonzero(prob == 0)
+                chosen_zero = np.random.choice(zero_idx, size=num_samples - len(nonzero_idx), replace=False)
+                indices = np.concatenate([chosen_nonzero, chosen_zero])
+            # indices = np.random.choice(len(syn_data.data_frame), size=num_samples, p=prob, replace=False)
             new_data_frame = syn_data.data_frame.iloc[indices]
             new_data_frame[PARENT_SYN_DATA_INDEX_COLUMN_NAME] = syn_data.data_frame.index[indices]
             return Data(data_frame=new_data_frame, metadata=syn_data.metadata)
         elif self._selection_mode == "rank":
             count = syn_data.data_frame[POST_PROCESSED_DP_HISTOGRAM_COLUMN_NAME].to_numpy()
+            # count = syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME].to_numpy()
             indices = np.argsort(count)[::-1][:num_samples]
             new_data_frame = syn_data.data_frame.iloc[indices]
             new_data_frame[PARENT_SYN_DATA_INDEX_COLUMN_NAME] = syn_data.data_frame.index[indices]
             return Data(data_frame=new_data_frame, metadata=syn_data.metadata)
         else:
             raise ValueError(f"Selection mode {self._selection_mode} is not supported")
-
-    def _log_histogram(self, syn_data):
-        """Log the histogram.
-
-        :param syn_data: The synthetic data with the histogram
-        :type syn_data: :py:class:`pe.data.Data`
-        """
-        if self._histogram_log_folder is None:
-            return
-        labels = set(list(syn_data.data_frame[LABEL_ID_COLUMN_NAME].values))
-        assert len(labels) == 1
-        label = list(labels)[0]
-        iteration = syn_data.metadata["iteration"]
-        log_folder = os.path.join(self._histogram_log_folder, f"{iteration}", f"label-id{label}")
-        syn_data.save_checkpoint(log_folder)
 
     def next(self, syn_data, num_samples):
         """Generate the next synthetic data.
@@ -164,8 +163,21 @@ class PEPopulation(Population):
             f"Population: generating {num_samples}*{self._next_variation_api_fold} " "next synthetic samples"
         )
         syn_data = self._post_process_histogram(syn_data)
+        
         selected_data = self._select_data(syn_data, num_samples)
         selected_data.data_frame[FROM_LAST_FLAG_COLUMN_NAME] = 1
         selected_data.data_frame[VARIATION_API_FOLD_ID_COLUMN_NAME] = -1
-
-        return selected_data
+        variation_data_list = []
+        for variation_api_fold_id in range(self._next_variation_api_fold):
+            variation_data = self._api.variation_api(syn_data=selected_data)
+            variation_data.data_frame[PARENT_SYN_DATA_INDEX_COLUMN_NAME] = selected_data.data_frame[
+                PARENT_SYN_DATA_INDEX_COLUMN_NAME
+            ].values
+            variation_data.data_frame[FROM_LAST_FLAG_COLUMN_NAME] = 0
+            variation_data.data_frame[VARIATION_API_FOLD_ID_COLUMN_NAME] = variation_api_fold_id
+            variation_data_list.append(variation_data)
+        new_syn_data = Data.concat(variation_data_list + ([selected_data] if self._keep_selected else []))
+        execution_logger.info(
+            f"Population: finished generating {num_samples}*{self._next_variation_api_fold} " "next synthetic samples"
+        )
+        return new_syn_data
