@@ -16,7 +16,7 @@ class Yelp(TextCSV):
 
     #: The download information for the Yelp dataset.
     DOWNLOAD_INFO_DICT = {
-        "train": DownloadInfo(url="https://drive.google.com/uc?id=1epLuBxCk5MGnm1GiIfLcTcr-tKgjCrc2", type="gdown"),
+        "train": DownloadInfo(url="https://drive.google.com/drive/u/1/folders/1-hNO6pjSS8Wh8wJ-EpJmvxv3HoSMk2D9", type="gdown"),
         "val": DownloadInfo(
             url=(
                 "https://raw.githubusercontent.com/AI-secure/aug-pe/bca21c90921bd1151aa7627e676c906165e205a0/data/"
