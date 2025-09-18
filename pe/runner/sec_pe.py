@@ -216,7 +216,7 @@ class SECPE(object):
                 pickle.dump(label_data, f)
                 
             
-            syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/cluster15_50p")
+            syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/cluster15_infty")
             syn_data.data_frame.reset_index(drop=True, inplace=True)
             syn_data.metadata.iteration = 0
             syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
