@@ -213,6 +213,9 @@ class SECPE(object):
                 label_data[label_id] = {
                     "clusters": [{"center": c["center"], "size": int(c["size"])} for c in clusters],
                 }
+
+            with open("/content/drive/MyDrive/SecPE/label_data.pkl", "wb") as f:
+                pickle.dump(label_data, f)
                 
             # if checkpoint_path is not None and (syn_data := self.load_checkpoint(checkpoint_path)):
             #     execution_logger.info(
@@ -236,7 +239,7 @@ class SECPE(object):
             #     syn_data.metadata.iteration = 0
             #     self._log_metrics(syn_data)
 
-            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/yelp_huggingface_mugdp_10p-000000005/000000005.csv")
+            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/pre_file.csv")
             syn_data = Data.concat(syn_data_list, metadata=self._mix_data.metadata)
             syn_data.data_frame.reset_index(drop=True, inplace=True)
             syn_data.metadata.iteration = 0
