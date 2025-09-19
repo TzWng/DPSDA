@@ -199,7 +199,7 @@ class SECPE(object):
         try:
 
             # syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/cluster25_2p")
-            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/api/yelp_qwen7b/cluster600_0p")
+            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/api/yelp_gpt4/cluster600_0p")
             syn_data.data_frame.reset_index(drop=True, inplace=True)
             syn_data.metadata.iteration = 0
             syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
@@ -222,7 +222,7 @@ class SECPE(object):
             # with open("/content/drive/MyDrive/SecPE/label_data_800k.pkl", "wb") as f:
             #     pickle.dump(label_data, f)
 
-            with open("/content/drive/MyDrive/SecPE/label_data_600k.pkl", "rb") as f:
+            with open("/content/drive/MyDrive/SecPE/label_data_800k.pkl", "rb") as f:
                 label_data = pickle.load(f)
                 
         
