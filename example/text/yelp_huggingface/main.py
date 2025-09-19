@@ -42,7 +42,7 @@ pd.options.mode.copy_on_write = True
 
 
 if __name__ == "__main__":
-    exp_folder = "/content/drive/MyDrive/SecPE/synthetic_text/yelp_llama"
+    exp_folder = "/content/drive/MyDrive/SecPE"
     current_folder = os.path.dirname(os.path.abspath(__file__))
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
