@@ -47,7 +47,8 @@ if __name__ == "__main__":
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
 
-    data = OpenReview(root_dir="/tmp/data/openreview")
+    # data = OpenReview(root_dir="/tmp/data/openreview")
+    data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/openreview_gpt2")
     secrets = ['arouse', 'peters', 'garcia', 'h2', '4dvar', 'kth', 'broyden', 'hypergradients', 
                'scalers', 'tianyu', 'disciplinary', 'sharpen', 'organizational', 'wild6d', 
                'intrinsics', 'minh', 'eric', 'underlined', 'typeset', '3c', 'eating']
