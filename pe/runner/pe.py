@@ -281,7 +281,9 @@ class PE(object):
                     execution_logger.info(f"noise for mu GDP: {sub_sigma}")
 
 
-            total_duration = 0.0 
+            total_duration_1 = 0.0 
+            total_duration_2 = 0.0 
+            total_duration_3 = 0.0 
 
             # Run PE iterations.
             for iteration in trange(syn_data.metadata.iteration + 1, len(num_samples_schedule)):
@@ -309,25 +311,34 @@ class PE(object):
                     execution_logger.info(f"noise for mu GDP: {noise}")
 
                     # DP NN histogram.
-                    start_time = time.time()
-                    sub_mix_data, sub_syn_data = self._histogram.compute_histogram(
+                    
+                    sub_mix_data, sub_syn_data, time_1, time_2 = self._histogram.compute_histogram(
                         priv_data=sub_mix_data, 
                         syn_data=sub_syn_data, 
                     )
-                    end_time = time.time()
-                    duration = end_time - start_time
-                    total_duration += duration
+                    
+                    total_duration_1 += time_1 
+                    total_duration_2 += time_2
 
                     # priv_data_list.append(sub_mix_data)
                     sub_syn_data = sp.add_noise(syn_data=sub_syn_data, noise_multiplier=noise)
 
                     # Generate next population.
+                    start_time = time.time()
                     sub_syn_data = self._population.next(
                         syn_data=sub_syn_data,
                         num_samples=num_samples_per_label_id[label_id],
                     )
+                    end_time = time.time()
+                    duration = end_time - start_time
+                    total_duration_3 += duration
+                    
                     sub_syn_data.set_label_id(label_id)
                     syn_data_list.append(sub_syn_data)
+
+                    execution_logger.info(f"distance time: {time_1}")
+                    execution_logger.info(f"data time: {time_2}")
+                    execution_logger.info(f"LLM time: {duration}")
 
                 syn_data = Data.concat(syn_data_list)
                 syn_data.data_frame.reset_index(drop=True, inplace=True)
@@ -342,5 +353,7 @@ class PE(object):
         finally:
             self._clean_up_loggers()
 
-        execution_logger.info(f"total computation time: {total_duration}")
+        execution_logger.info(f"total distance time: {total_duration_1}")
+        execution_logger.info(f"total data time: {total_duration_2}")
+        execution_logger.info(f"total LLM time: {total_duration_3}")
         return syn_data
