@@ -102,6 +102,6 @@ if __name__ == "__main__":
     #     checkpoint_path=os.path.join(exp_folder, "checkpoint"),
     # )
     data = Data()
-    data.load_checkpoint("/content/drive/MyDrive/SecPE/pubmed_train/cluster2000_2p/000000005")
+    data.load_checkpoint("/content/drive/MyDrive/SecPE/pubmed_train/augpe_2p/000000005")
     data = data.filter({VARIATION_API_FOLD_ID_COLUMN_NAME: -1})
-    SaveTextToCSV(output_folder="/content/drive/MyDrive/SecPE/pubmed_train/cluster2000_2p/new")(data)
+    SaveTextToCSV(output_folder="/content/drive/MyDrive/SecPE/pubmed_train/augpe_2p/new")(data)
