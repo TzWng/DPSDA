@@ -198,33 +198,33 @@ class SECPE(object):
         """
         try:
 
-            # syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/cluster25_2p")
+            syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/cluster25_infty")
             # syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/api/yelp_mistral/cluster600_10p")
-            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/yelp/yelp_augpe_infty")
+            # syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/yelp/yelp_augpe_infty")
             syn_data.data_frame.reset_index(drop=True, inplace=True)
             syn_data.metadata.iteration = 0
             syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
             # self._log_metrics(syn_data)
             
-            # label_data = {}
-            # execution_logger.info(f"clustering before iteration")
-            # for label_id in range(len(self._mix_data.metadata.label_info)):
-            #     execution_logger.info(f"Label {label_id}")
-            #     sub_mix_data = self._mix_data.filter_label_id(label_id=label_id)
-            #     secret_matrix = label_matrix[label_id] if label_matrix is not None else None
+            label_data = {}
+            execution_logger.info(f"clustering before iteration")
+            for label_id in range(len(self._mix_data.metadata.label_info)):
+                execution_logger.info(f"Label {label_id}")
+                sub_mix_data = self._mix_data.filter_label_id(label_id=label_id)
+                secret_matrix = label_matrix[label_id] if label_matrix is not None else None
                 
-            #     sub_mix_data = self._embedding.compute_embedding(sub_mix_data)
-            #     sub_mix_embedding = np.stack(sub_mix_data.data_frame[self._embedding.column_name].values, axis=0).astype(np.float32)
-            #     clusters = self._histogram.clustering_before_computation(sub_mix_embedding)
-            #     label_data[label_id] = {
-            #         "clusters": [{"center": c["center"], "size": int(c["size"])} for c in clusters],
-            #     }
+                sub_mix_data = self._embedding.compute_embedding(sub_mix_data)
+                sub_mix_embedding = np.stack(sub_mix_data.data_frame[self._embedding.column_name].values, axis=0).astype(np.float32)
+                clusters = self._histogram.clustering_before_computation(sub_mix_embedding)
+                label_data[label_id] = {
+                    "clusters": [{"center": c["center"], "size": int(c["size"])} for c in clusters],
+                }
 
             # with open("/content/drive/MyDrive/SecPE/label_data_800k.pkl", "wb") as f:
             #     pickle.dump(label_data, f)
 
-            with open("/content/drive/MyDrive/SecPE/label_data_800k.pkl", "rb") as f:
-                label_data = pickle.load(f)
+            # with open("/content/drive/MyDrive/SecPE/label_data_800k.pkl", "rb") as f:
+            #     label_data = pickle.load(f)
                 
         
             total_duration_1 = 0.0
