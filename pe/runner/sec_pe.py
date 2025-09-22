@@ -199,7 +199,6 @@ class SECPE(object):
         try:
 
             label_data = {}
-            sp = Gaussian(mode = self._dp_mode)
                 
             if checkpoint_path is not None and (syn_data := self.load_checkpoint(checkpoint_path)):
                 execution_logger.info(
