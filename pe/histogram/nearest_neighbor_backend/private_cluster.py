@@ -177,14 +177,14 @@ class FastClusterSearch(object):
 
         nn = NearestNeighbors(n_neighbors=1, metric=self.metric, algorithm='brute', n_jobs=-1)
         nn.fit(syn_embedding)
-        _, nn_ids = nn.kneighbors(centers, n_neighbors=2)                    # (K,1)
+        _, nn_ids = nn.kneighbors(centers, n_neighbors=1)                    # (K,1)
         nn_ids = nn_ids.reshape(-1)
 
-        votes = np.zeros(M, dtype=np.int64)
+        # votes = np.zeros(M, dtype=np.int64)
 
-        expanded_sizes = np.repeat(sizes, 2)  # 原始 sizes (K,) → 扩展后 (6K,)
-        np.add.at(votes, nn_ids, expanded_sizes)
-        # np.add.at(votes, nn_ids, sizes)
+        # expanded_sizes = np.repeat(sizes, 2)  # 原始 sizes (K,) → 扩展后 (6K,)
+        # np.add.at(votes, nn_ids, expanded_sizes)
+        np.add.at(votes, nn_ids, sizes)
 
         return votes.astype(int)
     
