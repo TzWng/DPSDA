@@ -180,7 +180,7 @@ class FastClusterSearch(object):
         _, nn_ids = nn.kneighbors(centers, n_neighbors=1)                    # (K,1)
         nn_ids = nn_ids.reshape(-1)
 
-        # votes = np.zeros(M, dtype=np.int64)
+        votes = np.zeros(M, dtype=np.int64)
 
         # expanded_sizes = np.repeat(sizes, 2)  # 原始 sizes (K,) → 扩展后 (6K,)
         # np.add.at(votes, nn_ids, expanded_sizes)
