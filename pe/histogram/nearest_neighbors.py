@@ -2,6 +2,7 @@ import numpy as np
 import os
 from collections import Counter
 import copy
+import time
 
 from pe.histogram import Histogram
 from pe.constant.data import CLEAN_HISTOGRAM_COLUMN_NAME
@@ -197,13 +198,16 @@ class NearestNeighbors(Histogram):
         syn_embedding = np.stack(syn_data.data_frame[LOOKAHEAD_EMBEDDING_COLUMN_NAME].values, axis=0).astype(
             np.float32
         )
-
+        
+        start_time = time.time()
         _, ids = self._search(
             syn_embedding=syn_embedding,
             priv_embedding=priv_embedding,
             num_nearest_neighbors=self._num_nearest_neighbors,
             mode=self._mode,
         )
+        end_time = time.time()
+        time_1 = end_time - start_time
 
         values, counts = np.unique(ids, return_counts=True)
         sorted_indices = np.argsort(-counts)
@@ -212,6 +216,7 @@ class NearestNeighbors(Histogram):
         execution_logger.info(f"voting_details: {sorted_values_counts}")
         self._log_voting_details(priv_data=priv_data, syn_data=syn_data, ids=ids)
 
+        start_time = time.time()
         priv_data = priv_data.reset_index(drop=True)
         if self._vote_normalization_level == "client":
             priv_data_list = priv_data.split_by_client()
@@ -228,6 +233,8 @@ class NearestNeighbors(Histogram):
             sub_count[list(counter.keys())] = list(counter.values())
             sub_count /= np.linalg.norm(sub_count)
             count += sub_count
+        end_time = time.time()
+        time_2 = end_time - start_time
 
         syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME] = count
 
@@ -236,7 +243,7 @@ class NearestNeighbors(Histogram):
             f"samples and {len(syn_data.data_frame)} synthetic samples"
         )
 
-        return priv_data, syn_data
+        return priv_data, syn_data, time_1, time_2
     
 
     def compute_histogram_cluster(self, syn_data, clusters):
@@ -264,11 +271,14 @@ class NearestNeighbors(Histogram):
         )
 
         clusterer = FastClusterSearch(mode=self._mode)
- 
+
+        start_time = time.time()
         votes = clusterer.search(
             syn_embedding=syn_embedding,
             clusters = clusters
             ).astype(np.float32)
+        end_time = time.time()
+        time_1 = end_time - start_time
         
         nz = np.flatnonzero(votes)
         order = nz[np.argsort(votes[nz])[::-1]]
@@ -309,7 +319,7 @@ class NearestNeighbors(Histogram):
             f"samples and {len(syn_data.data_frame)} synthetic samples"
         )
 
-        return syn_data
+        return syn_data, time_1
 
 
         
