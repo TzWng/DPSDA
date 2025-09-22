@@ -199,7 +199,8 @@ class SECPE(object):
         try:
 
             # syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/cluster25_2p")
-            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/api/yelp_mistral/cluster600_10p")
+            # syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/api/yelp_mistral/cluster600_10p")
+            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/yelp/yelp_augpe_infty")
             syn_data.data_frame.reset_index(drop=True, inplace=True)
             syn_data.metadata.iteration = 0
             syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
@@ -222,11 +223,12 @@ class SECPE(object):
             # with open("/content/drive/MyDrive/SecPE/label_data_800k.pkl", "wb") as f:
             #     pickle.dump(label_data, f)
 
-            with open("/content/drive/MyDrive/SecPE/label_data_800k.pkl", "rb") as f:
+            with open("/content/drive/MyDrive/SecPE/label_data_400k.pkl", "rb") as f:
                 label_data = pickle.load(f)
                 
         
-            total_duration = 0.0 
+            total_duration_1 = 0.0
+            total_duration_2 = 0.0
 
             # Run PE iterations.
             for iteration in trange(syn_data.metadata.iteration + 1, len(num_samples_schedule)):
@@ -245,21 +247,27 @@ class SECPE(object):
                     
                     clusters = pack["clusters"]
 
-                    start_time = time.time()
-                    sub_syn_data = self._histogram.compute_histogram_cluster(
+                    
+                    sub_syn_data, time_1 = self._histogram.compute_histogram_cluster(
                         syn_data=sub_syn_data, 
                         clusters=clusters
                     )
-                    end_time = time.time()
-                    duration = end_time - start_time
-                    total_duration += duration
+                    total_duration_1 += time_1
                     
-
+                    
+                    start_time = time.time()
                     # Generate next population.
                     sub_syn_data = self._population.next(
                         syn_data=sub_syn_data,
                         num_samples=num_samples_per_label_id[label_id],
                     )
+                    end_time = time.time()
+                    duration = end_time - start_time
+                    total_duration_2 += duration
+
+                    execution_logger.info(f"distance time: {time_1}")
+                    execution_logger.info(f"LLM time: {duration}")
+                    
                     sub_syn_data.set_label_id(label_id)
                     syn_data_list.append(sub_syn_data)
 
@@ -274,5 +282,6 @@ class SECPE(object):
         finally:
             self._clean_up_loggers()
 
-        execution_logger.info(f"total computation time: {total_duration}")
+        execution_logger.info(f"distance time: {total_duration_1}")
+        execution_logger.info(f"LLM time: {total_duration_2}")
         return syn_data
