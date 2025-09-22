@@ -19,6 +19,7 @@ https://microsoft.github.io/DPSDA/.
 """
 
 from pe.data.text import Yelp
+from pe.data import Data
 from pe.logging import setup_logging
 from pe.runner import PE, SECPE
 from pe.population import PEPopulation
