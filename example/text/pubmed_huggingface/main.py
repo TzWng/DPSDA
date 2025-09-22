@@ -42,7 +42,7 @@ pd.options.mode.copy_on_write = True
 
 
 if __name__ == "__main__":
-    exp_folder = "/content/drive/MyDrive/SecPE/pubmed_train"
+    exp_folder = "/content/drive/MyDrive/SecPE/pubmed_secpe"
     current_folder = os.path.dirname(os.path.abspath(__file__))
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
@@ -85,7 +85,7 @@ if __name__ == "__main__":
     num_private_samples = len(data.data_frame)
     delta = 1.0 / num_private_samples / np.log(num_private_samples)
 
-    pe_runner = PE(
+    pe_runner = SECPE(
         mix_data=data,
         embedding=embedding,
         secrets=secrets,
