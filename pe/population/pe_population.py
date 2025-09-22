@@ -167,5 +167,18 @@ class PEPopulation(Population):
         selected_data = self._select_data(syn_data, num_samples)
         selected_data.data_frame[FROM_LAST_FLAG_COLUMN_NAME] = 1
         selected_data.data_frame[VARIATION_API_FOLD_ID_COLUMN_NAME] = -1
+        variation_data_list = []
+        for variation_api_fold_id in range(self._next_variation_api_fold):
+            variation_data = self._api.variation_api(syn_data=selected_data)
+            variation_data.data_frame[PARENT_SYN_DATA_INDEX_COLUMN_NAME] = selected_data.data_frame[
+                PARENT_SYN_DATA_INDEX_COLUMN_NAME
+            ].values
+            variation_data.data_frame[FROM_LAST_FLAG_COLUMN_NAME] = 0
+            variation_data.data_frame[VARIATION_API_FOLD_ID_COLUMN_NAME] = variation_api_fold_id
+            variation_data_list.append(variation_data)
+        new_syn_data = Data.concat(variation_data_list + ([selected_data] if self._keep_selected else []))
+        execution_logger.info(
+            f"Population: finished generating {num_samples}*{self._next_variation_api_fold} " "next synthetic samples"
+        )
         
-        return selected_data
+        return new_syn_data
