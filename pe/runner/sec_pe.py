@@ -223,7 +223,7 @@ class SECPE(object):
 
             # syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/augpe_infty")
             # # syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/api/yelp_mistral/cluster600_10p")
-            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/yelp/yelp_huggingface_mugdp_2p_000000005")
+            syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/yelp/yelp_huggingface_mugdp_10p_000000005")
             syn_data.data_frame.reset_index(drop=True, inplace=True)
             syn_data.metadata.iteration = 0
             syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
