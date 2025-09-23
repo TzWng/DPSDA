@@ -223,8 +223,8 @@ class SECPE(object):
 
             # syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/augpe_infty")
             # # syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/api/yelp_mistral/cluster600_10p")
-            for cluster in ["secpe2000", "secpe3000", "secpe4000", "mugdp"]:
-                for rp in ["10", "50", "0"]:
+            for cluster in ["mugdp"]:
+                for rp in ["2"]:
                     # syn_data = Yelp(root_dir=f"/content/drive/MyDrive/SecPE/yelp/yelp_{cluster}_{rp}")
                     syn_data = PubMed(root_dir=f"/content/drive/MyDrive/SecPE/pubmed/pubmed_{cluster}_{rp}")
                     syn_data.data_frame.reset_index(drop=True, inplace=True)
