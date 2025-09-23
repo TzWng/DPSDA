@@ -1,7 +1,7 @@
 import numpy as np
 
 # from pe.dp import Gaussian
-from pe.data.text import Yelp, OpenReview
+from pe.data.text import Yelp, OpenReview, Pubmed
 from pe.data import Data
 from pe.constant.data import LABEL_ID_COLUMN_NAME
 from pe.logging import execution_logger
@@ -223,9 +223,10 @@ class SECPE(object):
 
             # syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/augpe_infty")
             # # syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/api/yelp_mistral/cluster600_10p")
-            for cluster in ["mugdp"]:
+            for cluster in ["2000", "3000", "4000]:
                 for rp in ["2", "10", "50", "0"]:
                     syn_data = Yelp(root_dir=f"/content/drive/MyDrive/SecPE/yelp/yelp_{cluster}_{rp}")
+                    syn_data = PubMed(root_dir=f"/content/drive/MyDrive/SecPE/pubmed/pubmed_qwen_secpe{cluster}_{rp}")
                     syn_data.data_frame.reset_index(drop=True, inplace=True)
                     syn_data.metadata.iteration = 0
                     syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
