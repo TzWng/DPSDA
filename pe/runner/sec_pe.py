@@ -308,4 +308,4 @@ class SECPE(object):
 
         # execution_logger.info(f"distance time: {total_duration_1}")
         # execution_logger.info(f"LLM time: {total_duration_2}")
-        return None
+        return label_data
