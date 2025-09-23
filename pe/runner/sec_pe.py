@@ -231,6 +231,7 @@ class SECPE(object):
                     syn_data.metadata.iteration = 0
                     syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
                     self._log_metrics(syn_data)
+                    execution_logger.info(f"{cluster}_{rp}")
             
             label_data = {}
             execution_logger.info(f"clustering before iteration")
