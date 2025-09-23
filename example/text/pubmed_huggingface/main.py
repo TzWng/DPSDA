@@ -68,14 +68,14 @@ if __name__ == "__main__":
     )
 
     save_checkpoints = SaveCheckpoints(os.path.join(exp_folder, "checkpoint"))
-    # compute_fid = ComputeFID(
-    #     priv_data=data, embedding=embedding, filter_criterion={VARIATION_API_FOLD_ID_COLUMN_NAME: -1}
-    # )
+    compute_fid = ComputeFID(
+        priv_data=data, embedding=embedding, filter_criterion={VARIATION_API_FOLD_ID_COLUMN_NAME: -1}
+    )
     # with open("/content/drive/MyDrive/SecPE/compute_fid_pubmed.pkl", "wb") as f:
     #     pickle.dump(compute_fid, f)
 
-    with open("/content/drive/MyDrive/SecPE/compute_fid_pubmed.pkl", "rb") as f:
-        compute_fid = pickle.load(f)
+    # with open("/content/drive/MyDrive/SecPE/compute_fid_pubmed.pkl", "rb") as f:
+    #     compute_fid = pickle.load(f)
         
     save_text_to_csv = SaveTextToCSV(output_folder=os.path.join(exp_folder, "synthetic_text"))
 
