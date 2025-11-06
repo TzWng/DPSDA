@@ -68,7 +68,7 @@ def get_noise_multiplier(
     num_steps,
     delta,
     min_noise_multiplier=1e-1,
-    max_noise_multiplier=500,
+    max_noise_multiplier=3000,
     max_epsilon=1e7,
 ):
     """Get noise multiplier of Gaussian mechanism.
@@ -209,7 +209,7 @@ class Gaussian(DP):
         if np.any(den <= 0):
             raise ValueError("Require r_j > p_j for all j.")
 
-        mu = 1.0 / den 
+        mu = den 
         
         ### solve linear program
         c = -np.ones(N)
@@ -241,7 +241,7 @@ class Gaussian(DP):
         self, p, r, sec_matrix,
         w, num_steps, 
         min_noise_multiplier=1e-1,
-        max_noise_multiplier=500,
+        max_noise_multiplier=3000,
     ):
         """
         Get noise multiplier of Gaussian mechanism.
