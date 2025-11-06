@@ -102,8 +102,11 @@ if __name__ == "__main__":
                   1.552, 1.608, 0.488, 1.496, 0.264, 0.096, 0.6  , 0.544, 0.936,
                   0.712, 0.152, 1.888, 1.832, 1.72 , 0.04 , 0.88 , 0.208, 0.432]) * p
 
+    with open('/content/drive/MyDrive/SecPE/label_matrix.pkl', 'rb') as f:
+        label_matrix = pickle.load(f)
+        
     pe_runner.run(
-        num_samples_schedule=[5000] * 2,
-        p=p, r=r,
+        num_samples_schedule=[5000] * 5,
+        p=p, r=r, label_matrix=label_matrix
         checkpoint_path=os.path.join(exp_folder, "checkpoint"),
     )
