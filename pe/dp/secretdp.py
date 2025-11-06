@@ -209,7 +209,7 @@ class Gaussian(DP):
         if np.any(den <= 0):
             raise ValueError("Require r_j > p_j for all j.")
 
-        mu = 1 / den 
+        mu = 1.0 / den 
         
         ### solve linear program
         c = -np.ones(N)
