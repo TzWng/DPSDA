@@ -43,7 +43,7 @@ pd.options.mode.copy_on_write = True
 
 
 if __name__ == "__main__":
-    exp_folder = "/content/drive/MyDrive/SecPE/yelp_pii_diff_10"
+    exp_folder = "/content/drive/MyDrive/SecPE/yelp_pii_diff_2"
     current_folder = os.path.dirname(os.path.abspath(__file__))
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
@@ -97,11 +97,10 @@ if __name__ == "__main__":
     )
     J = len(secrets)
     p = np.full(J, 1e-4, dtype=np.float64)
-    r = 2 * p
-    # r = np.array([1.36426439, 1.85269404, 1.73826158, 1.51077665, 1.61023344, 1.97465978, 1.69449269, 1.90054928, 1.530164  , 1.67302328,
-    #               1.63089708, 1.47273577, 2.        , 1.71623761, 1.6518259 , 1.5898316 , 1.76056817, 1.38177159, 1.80604379, 1.82922021,
-    #               1.41746286, 1.78316101, 1.34697901, 1.29642586, 1.45407605, 1.43565274, 1.56968826, 1.49163495, 1.3130625 , 1.94964062,
-    #               1.92493846, 1.87646911, 1.28      , 1.54980014, 1.32991264, 1.39950345]) * p
+    r = np.array([1.4 , 1.88, 1.78, 1.56, 1.66, 1.98, 1.74, 1.92, 1.58, 1.72, 1.68,
+                  1.52, 2.  , 1.76, 1.7 , 1.64, 1.8 , 1.42, 1.84, 1.86, 1.46, 1.82,
+                  1.38, 1.32, 1.5 , 1.48, 1.62, 1.54, 1.34, 1.96, 1.94, 1.9 , 1.3 ,
+                  1.6 , 1.36, 1.44]) * p
     # r = r * 5
 
     with open('/content/drive/MyDrive/SecPE/label_matrix.pkl', 'rb') as f:
