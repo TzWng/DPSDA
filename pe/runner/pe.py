@@ -324,7 +324,7 @@ class PE(object):
 
                     # DP NN histogram.
                     start_time = time.time()
-                    sub_mix_data, sub_syn_data = self._histogram.compute_histogram(
+                    sub_mix_data, sub_syn_data, time_1, time_2 = self._histogram.compute_histogram(
                         priv_data=sub_mix_data, 
                         syn_data=sub_syn_data, 
                     )
