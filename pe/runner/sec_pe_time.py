@@ -198,42 +198,41 @@ class SECPE(object):
         """
         try:
 
-            # label_data = {}           
-            # if checkpoint_path is not None and (syn_data := self.load_checkpoint(checkpoint_path)):
-            #     execution_logger.info(
-            #         f"Loaded checkpoint from {checkpoint_path}, iteration={syn_data.metadata.iteration}"
-            #     )
-            # else:
-            #     num_samples_per_label_id = self._get_num_samples_per_label_id(
-            #         num_samples=num_samples_schedule[0],
-            #         fraction_per_label_id=fraction_per_label_id,
-            #     )
-            #     syn_data_list = []
-            #     for label_id, label_info in enumerate(tqdm(self._mix_data.metadata.label_info)):
-            #         syn_data = self._population.initial(
-            #             label_info=label_info,
-            #             num_samples=num_samples_per_label_id[label_id],
-            #         )
-            #         syn_data.set_label_id(label_id)
-            #         syn_data_list.append(syn_data)
-            #     syn_data = Data.concat(syn_data_list, metadata=self._mix_data.metadata)
-            #     syn_data.data_frame.reset_index(drop=True, inplace=True)
-            #     syn_data.metadata.iteration = 0
-            #     self._log_metrics(syn_data)
+            label_data = {}           
+            if checkpoint_path is not None and (syn_data := self.load_checkpoint(checkpoint_path)):
+                execution_logger.info(
+                    f"Loaded checkpoint from {checkpoint_path}, iteration={syn_data.metadata.iteration}"
+                )
+            else:
+                num_samples_per_label_id = self._get_num_samples_per_label_id(
+                    num_samples=num_samples_schedule[0],
+                    fraction_per_label_id=fraction_per_label_id,
+                )
+                syn_data_list = []
+                for label_id, label_info in enumerate(tqdm(self._mix_data.metadata.label_info)):
+                    syn_data = self._population.initial(
+                        label_info=label_info,
+                        num_samples=num_samples_per_label_id[label_id],
+                    )
+                    syn_data.set_label_id(label_id)
+                    syn_data_list.append(syn_data)
+                syn_data = Data.concat(syn_data_list, metadata=self._mix_data.metadata)
+                syn_data.data_frame.reset_index(drop=True, inplace=True)
+                syn_data.metadata.iteration = 0
+                self._log_metrics(syn_data)
 
             # syn_data = OpenReview(root_dir="/content/drive/MyDrive/SecPE/train/augpe_infty")
             # # syn_data = Yelp(root_dir="/content/drive/MyDrive/SecPE/synthetic_text/api/yelp_mistral/cluster600_10p")
-            for cluster in ["secpe2000", "secpe3000", "secpe4000"]:
-                for rp in ["2"]:
-                    # syn_data = Yelp(root_dir=f"/content/drive/MyDrive/SecPE/yelp/yelp_{cluster}_{rp}")
-                    syn_data = PubMed(root_dir=f"/content/drive/MyDrive/SecPE/pubmed/pubmed_{cluster}_{rp}")
-                    syn_data.data_frame.reset_index(drop=True, inplace=True)
-                    syn_data.metadata.iteration = 0
-                    syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
-                    self._log_metrics(syn_data)
-                    execution_logger.info(f"{cluster}_{rp}")
+            # for cluster in ["secpe2000", "secpe3000", "secpe4000"]:
+            #     for rp in ["2"]:
+            #         # syn_data = Yelp(root_dir=f"/content/drive/MyDrive/SecPE/yelp/yelp_{cluster}_{rp}")
+            #         syn_data = PubMed(root_dir=f"/content/drive/MyDrive/SecPE/pubmed/pubmed_{cluster}_{rp}")
+            #         syn_data.data_frame.reset_index(drop=True, inplace=True)
+            #         syn_data.metadata.iteration = 0
+            #         syn_data.data_frame["PE.VARIATION_API_FOLD_ID"] = -1
+            #         self._log_metrics(syn_data)
+            #         execution_logger.info(f"{cluster}_{rp}")
             
-            label_data = {}
             execution_logger.info(f"clustering before iteration")
             for label_id in range(len(self._mix_data.metadata.label_info)):
                 execution_logger.info(f"Label {label_id}")
