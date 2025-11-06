@@ -327,7 +327,7 @@ class SECPE(object):
                                                              sigma = noise, R = 1)
 
                     start_time = time.time()
-                    sub_syn_data = self._histogram.compute_histogram_cluster(
+                    sub_syn_data, _ = self._histogram.compute_histogram_cluster(
                         syn_data=sub_syn_data, 
                         clusters=clusters
                     )
