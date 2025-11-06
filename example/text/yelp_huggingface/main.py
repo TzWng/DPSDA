@@ -43,7 +43,7 @@ pd.options.mode.copy_on_write = True
 
 
 if __name__ == "__main__":
-    exp_folder = "/content/drive/MyDrive/SecPE/yelp_pii_diff"
+    exp_folder = "/content/drive/MyDrive/SecPE/yelp_pii_diff_10"
     current_folder = os.path.dirname(os.path.abspath(__file__))
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
@@ -103,6 +103,7 @@ if __name__ == "__main__":
                   1.74455363, 1.7746084 , 1.26106757, 1.71500786, 1.17778365, 1.11895055,
                   1.30489262, 1.28279295, 1.44571946, 1.35024069, 1.13822758, 1.93282964,
                   1.90009524, 1.8362802 , 1.1       , 1.42123475, 1.1578367 , 1.23971012]) * p
+    r = r * 5
 
     with open('/content/drive/MyDrive/SecPE/label_matrix.pkl', 'rb') as f:
         label_matrix = pickle.load(f)
