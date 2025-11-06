@@ -107,6 +107,6 @@ if __name__ == "__main__":
         
     pe_runner.run(
         num_samples_schedule=[5000] * 5,
-        p=p, r=r, label_matrix=label_matrix
+        p=p, r=r, label_matrix=label_matrix,
         checkpoint_path=os.path.join(exp_folder, "checkpoint"),
     )
