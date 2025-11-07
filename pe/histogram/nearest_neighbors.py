@@ -216,6 +216,11 @@ class NearestNeighbors(Histogram):
         execution_logger.info(f"voting_details: {sorted_values_counts}")
         self._log_voting_details(priv_data=priv_data, syn_data=syn_data, ids=ids)
 
+        unique_ids, inverse_idx = np.unique(ids, return_inverse=True)
+        count = np.zeros(len(syn_data.data_frame), dtype=int)
+        for idx in unique_ids:
+            count[idx] = np.sum(ids == idx)
+    
         # start_time = time.time()
         # priv_data = priv_data.reset_index(drop=True)
         # if self._vote_normalization_level == "client":
@@ -235,8 +240,6 @@ class NearestNeighbors(Histogram):
         #     count += sub_count
         # end_time = time.time()
         # time_2 = end_time - start_time
-
-        count = np.bincount(ids, minlength=len(syn_data.data_frame))
 
         syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME] = count
 
