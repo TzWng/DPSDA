@@ -43,7 +43,7 @@ pd.options.mode.copy_on_write = True
 
 
 if __name__ == "__main__":
-    exp_folder = "/content/drive/MyDrive/SecPE/yelp_pii_diff_mugdp_10_new"
+    exp_folder = "/content/drive/MyDrive/SecPE/yelp_pii_diff_secpe600_10_new"
     current_folder = os.path.dirname(os.path.abspath(__file__))
 
     setup_logging(log_file=os.path.join(exp_folder, "log.txt"))
@@ -86,7 +86,7 @@ if __name__ == "__main__":
     num_private_samples = len(data.data_frame)
     delta = 1.0 / num_private_samples / np.log(num_private_samples)
 
-    pe_runner = PE(
+    pe_runner = SECPE(
         mix_data=data,
         embedding=embedding,
         secrets=secrets,
@@ -107,7 +107,7 @@ if __name__ == "__main__":
                   1.85, 1.97, 1.93]) * p
     r = r * 5
 
-    with open('/content/drive/MyDrive/SecPE/label_matrix.pkl', 'rb') as f:
+    with open('/content/drive/MyDrive/SecPE/label_matrix_filtered.pkl', 'rb') as f:
         label_matrix = pickle.load(f)
         
     pe_runner.run(
