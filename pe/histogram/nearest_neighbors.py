@@ -213,8 +213,8 @@ class NearestNeighbors(Histogram):
         sorted_indices = np.argsort(-counts)
         sorted_values_counts = list(zip(values[sorted_indices], counts[sorted_indices]))
 
-        # execution_logger.info(f"voting_details: {sorted_values_counts}")
-        # self._log_voting_details(priv_data=priv_data, syn_data=syn_data, ids=ids)
+        execution_logger.info(f"voting_details: {sorted_values_counts}")
+        self._log_voting_details(priv_data=priv_data, syn_data=syn_data, ids=ids)
 
         # start_time = time.time()
         # priv_data = priv_data.reset_index(drop=True)
@@ -236,8 +236,7 @@ class NearestNeighbors(Histogram):
         # end_time = time.time()
         # time_2 = end_time - start_time
 
-        norm = np.linalg.norm(counts)
-        count = counts / norm if norm > 0 else counts
+        count = np.bincount(ids, minlength=len(syn_data.data_frame))
 
         syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME] = count
 
