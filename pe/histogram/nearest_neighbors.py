@@ -248,7 +248,7 @@ class NearestNeighbors(Histogram):
             f"samples and {len(syn_data.data_frame)} synthetic samples"
         )
 
-        return priv_data, syn_data, time_1, time_2
+        return priv_data, syn_data, time_1, time_1
     
 
     def compute_histogram_cluster(self, syn_data, clusters):
