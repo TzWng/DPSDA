@@ -209,9 +209,9 @@ class NearestNeighbors(Histogram):
         end_time = time.time()
         time_1 = end_time - start_time
 
-        # values, counts = np.unique(ids, return_counts=True)
-        # sorted_indices = np.argsort(-counts)
-        # sorted_values_counts = list(zip(values[sorted_indices], counts[sorted_indices]))
+        values, counts = np.unique(ids, return_counts=True)
+        sorted_indices = np.argsort(-counts)
+        sorted_values_counts = list(zip(values[sorted_indices], counts[sorted_indices]))
 
         # execution_logger.info(f"voting_details: {sorted_values_counts}")
         # self._log_voting_details(priv_data=priv_data, syn_data=syn_data, ids=ids)
