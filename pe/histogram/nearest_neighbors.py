@@ -221,8 +221,8 @@ class NearestNeighbors(Histogram):
         for idx in unique_ids:
             count[idx] = np.sum(ids == idx)
     
-        # start_time = time.time()
-        # priv_data = priv_data.reset_index(drop=True)
+        start_time = time.time()
+        priv_data = priv_data.reset_index(drop=True)
         # if self._vote_normalization_level == "client":
         #     priv_data_list = priv_data.split_by_client()
         # elif self._vote_normalization_level == "sample":
