@@ -209,32 +209,35 @@ class NearestNeighbors(Histogram):
         end_time = time.time()
         time_1 = end_time - start_time
 
-        values, counts = np.unique(ids, return_counts=True)
-        sorted_indices = np.argsort(-counts)
-        sorted_values_counts = list(zip(values[sorted_indices], counts[sorted_indices]))
+        # values, counts = np.unique(ids, return_counts=True)
+        # sorted_indices = np.argsort(-counts)
+        # sorted_values_counts = list(zip(values[sorted_indices], counts[sorted_indices]))
 
-        execution_logger.info(f"voting_details: {sorted_values_counts}")
-        self._log_voting_details(priv_data=priv_data, syn_data=syn_data, ids=ids)
+        # execution_logger.info(f"voting_details: {sorted_values_counts}")
+        # self._log_voting_details(priv_data=priv_data, syn_data=syn_data, ids=ids)
 
-        start_time = time.time()
-        priv_data = priv_data.reset_index(drop=True)
-        if self._vote_normalization_level == "client":
-            priv_data_list = priv_data.split_by_client()
-        elif self._vote_normalization_level == "sample":
-            priv_data_list = priv_data.split_by_index()
-        else:
-            raise ValueError(f"Unknown vote normalization level: {self._vote_normalization_level}")
+        # start_time = time.time()
+        # priv_data = priv_data.reset_index(drop=True)
+        # if self._vote_normalization_level == "client":
+        #     priv_data_list = priv_data.split_by_client()
+        # elif self._vote_normalization_level == "sample":
+        #     priv_data_list = priv_data.split_by_index()
+        # else:
+        #     raise ValueError(f"Unknown vote normalization level: {self._vote_normalization_level}")
 
-        count = np.zeros(shape=syn_embedding.shape[0], dtype=np.float32)
-        for sub_priv_data in priv_data_list:
-            sub_count = np.zeros(shape=syn_embedding.shape[0], dtype=np.float32)
-            sub_ids = ids[sub_priv_data.data_frame.index]
-            counter = Counter(list(sub_ids.flatten()))
-            sub_count[list(counter.keys())] = list(counter.values())
-            sub_count /= np.linalg.norm(sub_count)
-            count += sub_count
-        end_time = time.time()
-        time_2 = end_time - start_time
+        # count = np.zeros(shape=syn_embedding.shape[0], dtype=np.float32)
+        # for sub_priv_data in priv_data_list:
+        #     sub_count = np.zeros(shape=syn_embedding.shape[0], dtype=np.float32)
+        #     sub_ids = ids[sub_priv_data.data_frame.index]
+        #     counter = Counter(list(sub_ids.flatten()))
+        #     sub_count[list(counter.keys())] = list(counter.values())
+        #     sub_count /= np.linalg.norm(sub_count)
+        #     count += sub_count
+        # end_time = time.time()
+        # time_2 = end_time - start_time
+
+        norm = np.linalg.norm(counts)
+        count = counts / norm if norm > 0 else counts
 
         syn_data.data_frame[CLEAN_HISTOGRAM_COLUMN_NAME] = count
 
