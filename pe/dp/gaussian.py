@@ -67,7 +67,7 @@ def get_noise_multiplier(
     num_steps,
     delta,
     min_noise_multiplier=1e-1,
-    max_noise_multiplier=500,
+    max_noise_multiplier=3000,
     max_epsilon=1e7,
 ):
     """Get noise multiplier of Gaussian mechanism.
