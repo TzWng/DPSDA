@@ -264,7 +264,7 @@ class PE(object):
                         sub_sigma = sp.get_noise_multiplier(
                             p=p, r=r, sec_matrix=sub_secret_matrix,
                             w = sub_prob, num_steps=len(num_samples_schedule)-1, 
-                            min_noise_multiplier=1e-1, max_noise_multiplier=500)
+                            min_noise_multiplier=1e-1, max_noise_multiplier=3000)
                     
                         label_data[label_id] = {
                             "noise": sub_sigma
