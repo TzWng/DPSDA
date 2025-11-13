@@ -43,7 +43,7 @@ pd.options.mode.copy_on_write = True
 
 
 if __name__ == "__main__":
-    for rp in [2, 10, 50]: 
+    for rp in [10, 50]: 
         exp_folder = f"/content/drive/MyDrive/SecPE/yelp_pii_diff_mugdp_new_{rp}"
         current_folder = os.path.dirname(os.path.abspath(__file__))
     
