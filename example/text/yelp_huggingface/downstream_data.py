@@ -10,7 +10,7 @@ from pe.constant.data import VARIATION_API_FOLD_ID_COLUMN_NAME
 
 for k in [1800]:
     data = Data()
-    data.load_checkpoint(f"/content/drive/MyDrive/SecPE/Yelp_different_K/yelp_huggingface_gpt2_secpe_10_{k}_random_5000_20/checkpoint/000000005")
+    data.load_checkpoint(f"/content/drive/MyDrive/SecPE/Yelp_different_K/yelp_huggingface_gpt2_secpe_10_{k}_random_5000_20/checkpoint/000000020")
     data = data.filter({VARIATION_API_FOLD_ID_COLUMN_NAME: -1})
     SaveTextToCSV(output_folder=f"/content/drive/MyDrive/SecPE/Yelp_different_K/yelp_huggingface_gpt2_secpe_10_{k}_random_5000_20/")(data)
 
