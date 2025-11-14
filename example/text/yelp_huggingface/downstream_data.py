@@ -8,7 +8,7 @@ from pe.constant.data import VARIATION_API_FOLD_ID_COLUMN_NAME
 #     data = data.filter({VARIATION_API_FOLD_ID_COLUMN_NAME: -1})
 #     SaveTextToCSV(output_folder=f"/content/drive/MyDrive/SecPE/yelp_pii_diff_secpe600_new_{rp}/")(data)
 
-for k in [200, 1000, 1200, 1600, 1800]:
+for k in [1800]:
     data = Data()
     data.load_checkpoint(f"/content/drive/MyDrive/SecPE/yelp_different_K/yelp_huggingface_gpt2_secpe_10_{k}_random_5000_20/checkpoint/000000005")
     data = data.filter({VARIATION_API_FOLD_ID_COLUMN_NAME: -1})
