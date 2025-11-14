@@ -15,9 +15,9 @@ import pandas as pd  # 现在再导入 pandas
 
 for rp in [2, 10, 50]:
     data = Data()
-    data.load_checkpoint(f"/content/drive/MyDrive/SecPE/yelp_huggingface_gpt2_mugdp_{rp}_0_pii_5000_20/checkpoint/000000005")
+    data.load_checkpoint(f"/content/drive/MyDrive/SecPE/Yelp_different_K/yelp_huggingface_gpt2_mugdp_{rp}_0_pii_5000_20/checkpoint/000000005")
     data = data.filter({VARIATION_API_FOLD_ID_COLUMN_NAME: -1})
-    SaveTextToCSV(output_folder=f"/content/drive/MyDrive/SecPE/yelp_huggingface_gpt2_mugdp_{rp}_0_pii_5000_20/")(data)
+    SaveTextToCSV(output_folder=f"/content/drive/MyDrive/SecPE/Yelp_different_K/yelp_huggingface_gpt2_mugdp_{rp}_0_pii_5000_20/")(data)
 
 # for k in [200, 1000, 1200, 1600, 1800]:
 #     data = Data()
