@@ -21,8 +21,8 @@ import pandas as pd  # 现在再导入 pandas
 
 for k in [600]:
     data = Data()
-    data.load_checkpoint(f"/content/drive/MyDrive/SecPE/Yelp_different_K/yelp_huggingface_gpt2_secpe_0_{k}_random_5000_20/000000010")
+    data.load_checkpoint(f"/content/drive/MyDrive/SecPE/Yelp_different_K/yelp_huggingface_gpt2_mugdp_0_{k}_random_5000_20/000000010")
     data = data.filter({VARIATION_API_FOLD_ID_COLUMN_NAME: -1})
-    SaveTextToCSV(output_folder=f"/content/drive/MyDrive/SecPE/Yelp_different_K/yelp_huggingface_gpt2_secpe_0_{k}_random_5000_20/")(data)
+    SaveTextToCSV(output_folder=f"/content/drive/MyDrive/SecPE/Yelp_different_K/yelp_huggingface_gpt2_mugdp_0_{k}_random_5000_20/")(data)
 
 
